@@ -51,7 +51,7 @@ class condition_test extends adler_testcase {
     /**
      * @dataProvider provide_test_construct_data
      *
-     * ANF-ID: [MVP12]
+     * # ANF-ID: [MVP12]
      */
     public function test_construct($structure, $expected_exception, $expected_condition) {
         if ($expected_exception) {
@@ -86,7 +86,7 @@ class condition_test extends adler_testcase {
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      *
-     *  ANF-ID: [MVP12]
+     *  # ANF-ID: [MVP12]
      */
     public function test_evaluate_section($exception) {
         $plugin_interface_mock = Mockery::mock('overload:'. plugin_interface::class);
@@ -233,7 +233,7 @@ class condition_test extends adler_testcase {
     /**
      * @dataProvider provide_test_evaluate_section_requirements_data
      *
-     *  ANF-ID: [MVP12]
+     *  # ANF-ID: [MVP12]
      */
     public function test_evaluate_section_requirements($statement, $expected, $exception, $section_states) {
         // map $section_states to the format of $section_states_map_format
@@ -308,7 +308,7 @@ class condition_test extends adler_testcase {
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      *
-     *  ANF-ID: [MVP13]
+     *  # ANF-ID: [MVP13]
      */
     public function test_make_condition_user_readable($condition, $section_states, $section_names, $expected) {
         $condition_mock = Mockery::mock(condition::class)->makePartial();
@@ -327,7 +327,7 @@ class condition_test extends adler_testcase {
     }
 
     /**
-     *  ANF-ID: [MVP13]
+     *  # ANF-ID: [MVP13]
      */
     public function test_get_description() {
         $condition_mock = Mockery::mock(condition::class)->makePartial();
@@ -366,7 +366,7 @@ class condition_test extends adler_testcase {
     }
 
     /**
-     *  ANF-ID: [MVP12]
+     *  # ANF-ID: [MVP12]
      */
     public function test_save() {
         $adler_statement = (object)['type' => 'adler', 'condition' => '1'];
@@ -409,7 +409,7 @@ class condition_test extends adler_testcase {
     /**
      * @dataProvider provide_test_is_available_data
      *
-     *  ANF-ID: [MVP12]
+     *  # ANF-ID: [MVP12]
      */
     public function test_is_available(array $installed_plugins, bool $evaluate_section_requirements, bool $not, bool $expected) {
         $info_mock = $this->getMockBuilder(info::class)
@@ -487,7 +487,7 @@ class condition_test extends adler_testcase {
     /**
      * @dataProvider provide_test_update_after_restore_data
      *
-     *  ANF-ID: [MVP2]
+     *  # ANF-ID: [MVP2]
      */
     public function test_update_after_restore($condition, $backup_id_mappings, $expected_updated_condition, $expect_exception) {
         global $CFG;
