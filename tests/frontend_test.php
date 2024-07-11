@@ -8,7 +8,10 @@ global $CFG;
 require_once($CFG->dirroot . '/availability/condition/adler/tests/lib/adler_testcase.php');
 
 
-class condition_test extends adler_testcase {
+class frontend_test extends adler_testcase {
+    /**
+     * ANF-ID: [MVP13]
+     */
     public function test_get_javascript_strings() {
         // make get_javascript_strings public
         $method = new ReflectionMethod(frontend::class, 'get_javascript_strings');
