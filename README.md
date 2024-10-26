@@ -28,14 +28,12 @@ Folgende Versionen werden unterstützt (mit mariadb und postresql getestet):
 
 | Moodle Branch           | PHP Version |
 |-------------------------|-------------|
-| MOODLE_401_STABLE (LTS) | 8.1         |
-| MOODLE_402_STABLE       | 8.1         |
-| MOODLE_402_STABLE       | 8.2         |
-| MOODLE_403_STABLE       | 8.1         |
-| MOODLE_403_STABLE       | 8.2         |
 | MOODLE_404_STABLE       | 8.1         |
 | MOODLE_404_STABLE       | 8.2         |
 | MOODLE_404_STABLE       | 8.3         |
+| MOODLE_405_STABLE (LTS) | 8.1         |
+| MOODLE_405_STABLE (LTS) | 8.2         |
+| MOODLE_405_STABLE (LTS) | 8.3         |
 
 ## Installation
 1. Dieses Plugin benötigt das Plugin `local_adler` als Abhängigkeit. Beide müssen zeitgleich installiert werden (= vor dem upgrade in die Moodle-Installation entpackt sein). Installation siehe `local_adler`
