@@ -7,7 +7,7 @@ use core_availability\frontend as availability_frontend;
 use section_info;
 
 class frontend extends availability_frontend {
-    protected function get_javascript_strings() {
+    protected function get_javascript_strings(): array {
         // You can return a list of names within your language file and the
         // system will include them here.
         // Should you need strings from another language file, you can also

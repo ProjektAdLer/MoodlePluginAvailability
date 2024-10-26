@@ -13,7 +13,7 @@ $string['description'] = 'Raumlogik für local_adler als availability condition 
 $string['pluginname'] = 'Raumlogik für local_adler';
 $string['title'] = 'Raumlogik';
 
-$string['description_previous_sections_required'] = 'Die vorangegangenen Räume müssen nach der folgenden Regel abgeschlossen sein: {$a}';
+$string['description_previous_sections_required'] = 'Die vorangegangenen Räume müssen abgeschlossen sein: {$a}';
 $string['description_previous_sections_required_not'] = 'Die vorangegangenen Räume dürfen nicht nach der folgenden Regel abgeschlossen sein: {$a}';
 $string['node_adler_rule'] = 'Adler Regel: {$a}';
 $string['condition_operator_pretty_and'] = 'und';

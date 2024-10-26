@@ -13,7 +13,7 @@ $string['description'] = 'Room logic for local_adler implemented as availability
 $string['pluginname'] = 'Room logic for local_adler';
 $string['title'] = 'Room logic';
 
-$string['description_previous_sections_required'] = 'The previous rooms have to be completed according to the rule: {$a}';
+$string['description_previous_sections_required'] = 'The previous rooms have to be completed: {$a}';
 $string['description_previous_sections_required_not'] = 'The previous rooms have not to be completed according to the rule: {$a}';
 $string['node_adler_rule'] = 'Adler rule: {$a}';
 $string['condition_operator_pretty_and'] = 'and';

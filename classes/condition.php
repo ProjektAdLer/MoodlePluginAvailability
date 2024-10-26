@@ -11,6 +11,7 @@ use core_availability\info;
 use core_plugin_manager;
 use dml_exception;
 use invalid_parameter_exception;
+use lang_string;
 use local_adler\plugin_interface;
 use local_logging\logger;
 use moodle_exception;
@@ -26,6 +27,7 @@ class condition extends availability_condition {
     /**
      * @throws coding_exception
      * @throws invalid_parameter_exception
+     * @throws moodle_exception
      */
     public function __construct($structure) {
         $this->logger = new logger('availability_adler', 'condition');
@@ -52,8 +54,7 @@ class condition extends availability_condition {
      * @throws invalid_parameter_exception
      * @throws moodle_exception
      */
-    public function evaluate_section_requirements($statement, $userid, bool $validation_mode = false): bool {
-        // TODO: protected
+    protected function evaluate_section_requirements($statement, $userid, bool $validation_mode = false): bool {
         // search for brackets
         for ($i = 0; $i < strlen($statement); $i++) {
             if ($statement[$i] == '(') {
@@ -135,7 +136,12 @@ class condition extends availability_condition {
     }
 
 
-    public function is_available($not, info $info, $grabthelot, $userid) {
+    /**
+     * @throws moodle_exception
+     * @throws invalid_parameter_exception
+     * @throws dml_exception
+     */
+    public function is_available($not, info $info, $grabthelot, $userid): bool {
         // check if local_adler is available
         $plugins = $this->core_plugin_manager_instance->get_installed_plugins('local');
         if (!array_key_exists('adler', $plugins)) {
@@ -210,16 +216,21 @@ class condition extends availability_condition {
         return "\"" . trim($updated_statement) . "\"";
     }
 
-    public function get_description($full, $not, info $info) {
+    /**
+     * @throws moodle_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function get_description($full, $not, info $info): lang_string|string {
         $translation_key = $not ? 'description_previous_sections_required_not' : 'description_previous_sections_required';
         return get_string($translation_key, 'availability_adler', $this->make_condition_user_readable($this->condition));
     }
 
-    protected function get_debug_string() {
+    protected function get_debug_string(): string {
         return 'Section condition: ' . $this->condition;
     }
 
-    public function save() {
+    public function save(): object {
         return (object)[
             'type' => 'adler',
             'condition' => $this->condition,
@@ -236,7 +247,7 @@ class condition extends availability_condition {
      * @return bool
      * @throws moodle_exception
      */
-    public function update_after_restore($restoreid, $courseid, base_logger $logger, $name) {
+    public function update_after_restore($restoreid, $courseid, base_logger $logger, $name): bool {
         $updated_condition = "";
         for ($i = 0; $i < strlen($this->condition); $i++) {
             $char = $this->condition[$i];
