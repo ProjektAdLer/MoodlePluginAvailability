@@ -5,6 +5,7 @@ namespace availability_adler;
 
 use availability_adler\lib\adler_testcase;
 use base_logger;
+use core\di;
 use core_availability\info;
 use core_plugin_manager;
 use local_adler\plugin_interface;
@@ -83,24 +84,23 @@ class condition_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_evaluate_section_data
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
      *
      *  # ANF-ID: [MVP12]
      */
     public function test_evaluate_section($exception) {
-        $plugin_interface_mock = Mockery::mock('overload:'. plugin_interface::class);
+        $plugin_interface_mock = Mockery::mock(plugin_interface::class);
         if ($exception == null) {
             $plugin_interface_mock->shouldReceive('is_section_completed')
                 ->once()
-                ->with(1,1)
+                ->with(1, 1)
                 ->andReturn(true);
         } else {
             $plugin_interface_mock->shouldReceive('is_section_completed')
                 ->once()
-                ->with(1,1)
+                ->with(1, 1)
                 ->andThrow(new moodle_exception($exception));
         }
+        di::set(plugin_interface::class, $plugin_interface_mock);
         if ($exception != null && $exception != 'user_not_enrolled') {
             $this->expectException(moodle_exception::class);
             $this->expectExceptionMessage($exception);
@@ -112,7 +112,7 @@ class condition_test extends adler_testcase {
 
 
         $condition = Mockery::mock(condition::class);
-        $result = $method->invoke($condition,1,1);
+        $result = $method->invoke($condition, 1, 1);
 
 
         if ($exception == null) {
@@ -305,8 +305,6 @@ class condition_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_make_condition_user_readable_data
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
      *
      *  # ANF-ID: [MVP13]
      */
@@ -318,10 +316,11 @@ class condition_test extends adler_testcase {
             $condition_mock->shouldReceive('evaluate_section')->with($section_id, 0)->andReturn($section_state);
         }
 
-        $plugin_interface_mock = Mockery::mock('overload:' . plugin_interface::class);
+        $plugin_interface_mock = Mockery::mock(plugin_interface::class);
         $plugin_interface_mock->shouldReceive('get_section_name')->andReturnUsing(function ($section_id) use ($section_names) {
             return $section_names[$section_id];
         });
+        di::set(plugin_interface::class, $plugin_interface_mock);
 
         $this->assertEquals($expected, $condition_mock->make_condition_user_readable($condition, 0));
     }
@@ -502,24 +501,28 @@ class condition_test extends adler_testcase {
         $name = 'test';
 
         // create get_backup_ids_record return map
+        $restore_dbops_mock = Mockery::mock(restore_dbops::class);
         $return_map = [];
         foreach ($backup_id_mappings as $mapping) {
-            $return_map[] = [restore_dbops::class, 'get_backup_ids_record', $restoreid, 'course_section', (string)$mapping[0], $mapping[1]];
+            $return_map[] = [$restoreid, 'course_section', (string)$mapping[0], $mapping[1]];
         }
+        $restore_dbops_mock->shouldReceive('get_backup_ids_record')
+            ->andReturnUsing(function ($restoreid, $type, $itemid) use ($return_map) {
+                foreach ($return_map as $map) {
+                    if ($map[0] == $restoreid && $map[1] == $type && $map[2] == $itemid) {
+                        return $map[3];
+                    }
+                }
+                return false;
+            });
+        di::set(restore_dbops::class, $restore_dbops_mock);
 
-        // mock condition
-        $condition_mock = $this->getMockBuilder(condition::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['callStatic'])
-            ->getMock();
-        $condition_mock->method('callStatic')
-            ->will($this->returnValueMap($return_map));
-
+        $condition_instance = Mockery::mock(condition::class)->makePartial();
         // set condition
-        $reflection = new ReflectionClass($condition_mock);
+        $reflection = new ReflectionClass($condition_instance);
         $property = $reflection->getProperty('condition');
         $property->setAccessible(true);
-        $property->setValue($condition_mock, $condition);
+        $property->setValue($condition_instance, $condition);
 
         // setup exception
         if ($expect_exception) {
@@ -527,11 +530,11 @@ class condition_test extends adler_testcase {
         }
 
         // call update_after_restore
-        $result = $condition_mock->update_after_restore($restoreid, $courseid, $base_logger_mock, $name);
+        $result = $condition_instance->update_after_restore($restoreid, $courseid, $base_logger_mock, $name);
 
         // verify result
         $this->assertEquals(true, $result);
-        $updated_condition = $property->getValue($condition_mock);
+        $updated_condition = $property->getValue($condition_instance);
         $this->assertEquals($expected_updated_condition, $updated_condition);
     }
 }

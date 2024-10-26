@@ -5,6 +5,7 @@ namespace availability_adler;
 
 use base_logger;
 use coding_exception;
+use core\di;
 use core_availability\condition as availability_condition;
 use core_availability\info;
 use core_plugin_manager;
@@ -17,7 +18,6 @@ use restore_dbops;
 
 
 class condition extends availability_condition {
-    use static_call_trait;
     protected logger $logger;
 
     protected string $condition;
@@ -124,7 +124,7 @@ class condition extends availability_condition {
      */
     protected function evaluate_section($section_id, $userid): bool {
         try {
-            return plugin_interface::is_section_completed($section_id, $userid);
+            return di::get(plugin_interface::class)::is_section_completed($section_id, $userid);
         } catch (moodle_exception $e) {
             if ($e->errorcode == 'user_not_enrolled') {
                 return false;
@@ -188,7 +188,7 @@ class condition extends availability_condition {
                 } else {
                     $updated_statement .= '<span style="color: red;">';
                 }
-                $section_name = plugin_interface::get_section_name($part);
+                $section_name = di::get(plugin_interface::class)::get_section_name($part);
                 $updated_statement .= htmlspecialchars($section_name, ENT_QUOTES, 'UTF-8') . '</span>';
             } else {
                 switch ($part) {
@@ -250,7 +250,7 @@ class condition extends availability_condition {
                 $i = $j - 1;
 
                 // add updated id to new string
-                $updated_id = $this->callStatic(restore_dbops::class, 'get_backup_ids_record', $restoreid, 'course_section', $number);
+                $updated_id = di::get(restore_dbops::class)::get_backup_ids_record($restoreid, 'course_section', $number);
                 if ($updated_id == false) {
                     throw new moodle_exception('unknown_section', 'availability_adler', '', NULL, 'section: ' . $number);
                 }
